@@ -36,9 +36,10 @@ model Book {
   id                 Int       @id @default(autoincrement())
   title              String
   author             String
-  category           Category  @relation(fields: [categoryId], references: [id])
-  categoryId         Int
+  category           String[]
   quantity           Int
+  image              String[]
+  price              Float
   availabilityStatus String    @default("Available")
   registered         Boolean   @default(false)
   owner              User      @relation(fields: [ownerId], references: [id])
@@ -70,12 +71,6 @@ model Revenue {
   bookId  Int
   owner   User     @relation(fields: [ownerId], references: [id])
   ownerId Int
-}
-
-model Category {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
-  books Book[]
 }
 
 enum Role {

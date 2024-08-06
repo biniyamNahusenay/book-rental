@@ -1,6 +1,7 @@
 import express from "express"
 import dotenv from "dotenv"
 import userRoute from "./routes/userRoute.js"
+import bookRoutes from "./routes/bookRoutes.js"
 import cookieParser from "cookie-parser"
 
 dotenv.config();
@@ -13,6 +14,7 @@ app.use(cookieParser())
 const PORT = process.env.PORT || 5000
 
 app.use("/api/user",userRoute)
+app.use("/api/books",bookRoutes)
 
 app.listen(PORT, () => {
 	console.log("Server is running on port " + PORT);

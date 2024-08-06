@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import Prisma from '../db/prisma.js';
 import asyncHandler from '../middlewares/asyncHandler.js';
@@ -87,4 +86,16 @@ export const logoutUser = asyncHandler(async(req:Request,res:Response)=>{
   });
 
   res.status(200).json({ message: "Logged out successfully" });
+})
+
+export const getAllUsers = asyncHandler(async(req:Request,res:Response)=>{
+  try {
+    // Fetch all users from the database
+    const users = await Prisma.user.findMany();
+
+    res.status(200).json({ users });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error});
+  }
+
 })
