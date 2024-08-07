@@ -99,3 +99,21 @@ export const getAllUsers = asyncHandler(async(req:Request,res:Response)=>{
   }
 
 })
+ //creating a controller function that updates the 'approved' status of an owner
+export const approveOwner = asyncHandler(async(req:Request,res:Response)=>{
+   try {
+     const ownerId = parseInt(req.params.id,10)
+     const owner = await Prisma.user.findUnique({where:{id:ownerId}})
+     if(!owner){
+       return res.status(404).json({message:"owner not found"})
+     }
+     //update the owners approval status
+     const updatedOwner = await Prisma.user.update({
+       where:{id:ownerId},
+       data:{approved:true}
+     })
+     res.status(200).json({message:'Owner approved successfully',updatedOwner})
+   } catch (error) {
+     res.status(500).json({message:"server error",error})
+   }
+})

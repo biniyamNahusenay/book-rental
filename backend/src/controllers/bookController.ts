@@ -22,6 +22,10 @@ export const createBook = asyncHandler(async(req:Request,res:Response )=>{
         }
     
         const { title, author, category, quantity, image, price, ownerId } = result.data;
+        const owner = await Prisma.user.findUnique({ where: { id: ownerId } });
+        if(!owner || !owner.approved){
+          return res.status(403).json({ message: 'Owner is not approved' });
+        }
     
         const newBook = await Prisma.book.create({
           data: {
@@ -78,26 +82,13 @@ export const deleteBook = asyncHandler(async(req:Request,res:Response)=>{
   }
 })
 
-// Controller to get books based on user role
-// export const getAllBooks = asyncHandler(async (req: Request, res: Response) => {
-//   try {
-//     const userId = req.user?.id; // Extract user ID from request object, set by authentication middleware
-//     const userRole = req.user?.role; // Extract user role from request object
-
-//     if (userRole === 'Admin') {
-//       // Admin sees all books
-//       const books = await Prisma.book.findMany();
-//       res.status(200).json({ books });
-//     } else if (userRole === 'Owner') {
-//       // Owner sees only their books
-//       const books = await Prisma.book.findMany({
-//         where: { ownerId: userId },
-//       });
-//       res.status(200).json({ books });
-//     } else {
-//       res.status(403).json({ message: 'Access denied' });
-//     }
-//   } catch (error) {
-//     res.status(500).json({ message: 'Server error', error });
-//   }
-// });
+// Controller to get all books
+  
+export const getAllUploadedBooks = asyncHandler(async(req:Request,res:Response)=>{
+   try {
+      const books = await Prisma.book.findMany()
+      res.status(200).json({books})
+   } catch (error) {
+     res.status(500).json({message:"server error"})
+   }
+})
