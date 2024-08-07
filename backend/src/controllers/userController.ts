@@ -117,3 +117,76 @@ export const approveOwner = asyncHandler(async(req:Request,res:Response)=>{
      res.status(500).json({message:"server error",error})
    }
 })
+
+export const getOwnerRevenue = asyncHandler(async(req:Request,res:Response)=>{
+  try {
+    const ownerId = (req as any).user?.id
+    const revenues = await Prisma.revenue.findMany({
+      where:{ownerId:ownerId}
+    })
+    const totalRevenue = revenues.reduce((total,revenue)=>total + revenue.amount,0)
+    res.status(200).json({ revenue: totalRevenue });
+  } catch (error) {
+     res.status(500).json({ message: 'Server error', error });
+  }
+})
+
+export const disableUser = asyncHandler(async(req:Request,res:Response)=>{
+  try {
+    const ownerId = parseInt(req.params.id,10)
+    const owner = await Prisma.user.findUnique({where:{id:ownerId}})
+    if(!owner){
+      return res.status(404).json({message:"owner not found"})
+    }
+
+    const disabledOwner = await Prisma.user.update({
+      where:{id:ownerId},
+      data:{active:false}
+    })
+
+     res.status(200).json({ message: 'Owner disabled successfully', disabledOwner });
+  } catch (error) {
+     res.status(500).json({ message: 'Server error', error });
+  }
+})
+
+export const filterBooks = asyncHandler(async(req:Request,res:Response)=>{
+  try {
+     const {category,author,ownerId,limit} = req.query
+     const filters : any = {}
+     if(category) filters.category = {has:category as string} // cause category is an array
+     if(author) filters.author = author as string
+     if(ownerId) filters.ownerId = parseInt(ownerId as string,10)
+      const books = await Prisma.book.findMany({
+        where:filters,
+        take:limit ? parseInt(limit as string,10) : undefined       
+      })
+      res.status(200).json({books});
+  } catch (error) {
+     res.status(500).json({ message: 'Server error', error });
+  }
+})
+
+export const filterBooksByLocation = asyncHandler(async(req:Request,res:Response)=>{
+   try {
+    const { location } = req.query;
+    if (!location) {
+      return res.status(400).json({ message: 'Location parameter is required' });
+    }
+
+    const books = await Prisma.book.findMany({
+      where:{
+        owner:{
+          location:location as string
+        },
+      },
+      include:{
+        owner:true
+      }
+    })
+
+    res.status(200).json({ books });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+})

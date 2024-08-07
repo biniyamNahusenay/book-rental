@@ -53,7 +53,16 @@ export const editBook = asyncHandler(async(req:Request,res:Response)=>{
      if (!result.success) {
         return res.status(400).json(result.error.errors);
       } 
-      const updateData = result.data;
+      const updateData:any = {...result.data};
+      if(result.data.quantity !== undefined){
+        updateData.quantity = result.data.quantity
+
+        if(updateData.quantity <= 0){
+          updateData.availabilityStatus = 'rented'
+        }else{
+           updateData.availabilityStatus = 'available'
+        }
+      }
 
     // Update the book
     const updatedBook = await Prisma.book.update({
@@ -90,5 +99,45 @@ export const getAllUploadedBooks = asyncHandler(async(req:Request,res:Response)=
       res.status(200).json({books})
    } catch (error) {
      res.status(500).json({message:"server error"})
+   }
+})
+
+export const getOwnersBook = asyncHandler(async(req,res)=>{
+  try {
+    const userId = (req as any).user?.id
+    const books = await Prisma.book.findMany({where:{ownerId:userId}})
+    res.status(200).json({books})
+  } catch (error) {
+     res.status(500).json({message:"Server error",error})
+  }
+})
+
+export const getSingleBook = asyncHandler(async(req,res)=>{
+  try {
+    const bookId = parseInt(req.params.id,10)
+    const book = await Prisma.book.findUnique({where:{id:bookId}})
+    if(!book){
+      return res.status(404).json({message:"book not found"})
+    }
+    res.status(200).json(book)
+  } catch (error) {
+     res.status(500).json({message:"server error",error})
+  }
+})
+
+export const getBooksStatisticsByCategory = asyncHandler(async(req,res)=>{
+   try {
+     const statistics = await Prisma.book.groupBy({
+      by:['category'],
+      _count:{
+        _all:true
+      },
+      where:{
+        availabilityStatus:'available'
+      }
+     })
+     res.status(200).json(statistics)
+   } catch (error) {
+      res.status(500).json({ message: 'Server error', error });
    }
 })

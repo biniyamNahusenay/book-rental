@@ -11,14 +11,19 @@ const defineAbilitiesFor = (user:User) => {
       can('update', 'Book', { ownerId: user.id });
       can('delete', 'Book', { ownerId: user.id });
       can('read', 'Book', { ownerId: user.id });
+      can('read', 'Revenue', { ownerId: user.id });
     } else if (user.role === 'Admin') {
       can('manage', 'all');
+      can('disable', 'User');
+    }else if(user.role === 'Renter'){
+      can('read', 'Book');
+      can('rent', 'Book',{ status: 'available' });
     }
   
     return build();
   };
   
-  const authorizeUser = (action: 'create' | 'read' | 'update' | 'delete' | 'manage', subject:'Book' | 'User' | 'all') => {
+  const authorizeUser = (action: 'create' | 'read' | 'update' | 'delete' | 'manage' | 'rent' | 'disable', subject:'Book' | 'User' | 'all' | 'Revenue') => {
     return async (req: Request, res: Response, next: NextFunction) => {
       const user = (req as any).user;
       const ability = defineAbilitiesFor(user);
