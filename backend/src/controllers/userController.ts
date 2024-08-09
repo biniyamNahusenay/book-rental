@@ -12,6 +12,8 @@ const registerSchema = z.object({
     role: z.enum(['Admin', 'Owner', 'Renter']).optional(),
     phoneNumber: z.string().optional(),
     location: z.string().optional(),
+    terms: z
+    .boolean().default(false)
   }).refine(data => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"], // Field to attach the error message
@@ -20,6 +22,7 @@ const registerSchema = z.object({
   const loginSchema = z.object({
     email: z.string().email(),
     password: z.string().min(8),
+    remember: z.boolean().default(false)
   });
 
 export const registerUser = asyncHandler(async(req:Request,res:Response)=>{

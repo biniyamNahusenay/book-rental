@@ -1,10 +1,14 @@
-import { useState } from 'react'
-import Button from '@mui/material/Button';
+import {ToastContainer} from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { Outlet } from 'react-router';
 
 function App() {
   return (
     <>
-      <Button variant="contained">Hello world</Button>
+    <ToastContainer/>
+    <main className='py-3'>
+      <Outlet/>
+    </main>
     </>
   )
 }
