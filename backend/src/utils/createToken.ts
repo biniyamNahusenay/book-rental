@@ -13,7 +13,6 @@ const generateToken = (res: Response, userId: number): string => {
     sameSite: "strict",//prevent csrf attack cross-site request forgery
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
   });
-
   return token;
 }
 

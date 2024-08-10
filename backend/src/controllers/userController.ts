@@ -193,3 +193,31 @@ export const filterBooksByLocation = asyncHandler(async(req:Request,res:Response
     res.status(500).json({ message: 'Server error', error });
   }
 })
+
+export const getOwner = asyncHandler(async(req:Request,res:Response)=>{
+  const { id } = req.params;
+
+    // Validate ID
+    if (!id) {
+        res.status(400).json({ message: 'Owner ID is required' });
+        return;
+    }
+
+    try {
+        // Fetch owner from the database
+        const owner = await Prisma.user.findUnique({
+          where: { id: parseInt(id,10) }, // Adjust based on your ID type
+          select: { email: true } // Only select the email field
+        });
+
+        if (!owner) {
+            res.status(404).json({ message: 'Owner not found' });
+            return;
+        }
+
+        res.status(200).json(owner);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+
+})

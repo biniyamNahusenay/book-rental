@@ -1,6 +1,6 @@
 import express from "express"
 import { loginUser, logoutUser, registerUser,getAllUsers,
-    approveOwner, getOwnerRevenue, disableUser,filterBooks,filterBooksByLocation} from "../controllers/userController.js"
+    approveOwner, getOwnerRevenue, disableUser,filterBooks,filterBooksByLocation,getOwner} from "../controllers/userController.js"
 import authenticate from "../middlewares/authMiddleware.js"
 import authorizeUser from "../middlewares/authorizeMiddleware.js" 
 
@@ -15,5 +15,6 @@ router.get("/owners/revenue",authenticate,authorizeUser("read","Revenue"),getOwn
 router.patch("/owner/:id/disable",authenticate,authorizeUser("disable","User"),disableUser)
 router.get("/books/filter",authenticate,filterBooks)
 router.get('/books/location', authenticate, filterBooksByLocation);
+router.get("/owners/:id",authenticate,authorizeUser("manage","all"),getOwner)
 
 export default router
