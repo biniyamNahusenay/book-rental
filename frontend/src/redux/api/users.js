@@ -73,4 +73,4 @@ export const userApiSlice = apiSlice.injectEndpoints({
     })
 })
 
-export const {useRegisterMutation,useLoginMutation,useGetAllUsersQuery,useGetOwnerByIdQuery} = userApiSlice
+export const {useRegisterMutation,useLoginMutation,useGetAllUsersQuery,useGetOwnerByIdQuery,useApproveOwnerMutation} = userApiSlice

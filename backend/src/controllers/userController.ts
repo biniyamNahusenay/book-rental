@@ -94,7 +94,7 @@ export const logoutUser = asyncHandler(async(req:Request,res:Response)=>{
 export const getAllUsers = asyncHandler(async(req:Request,res:Response)=>{
   try {
     // Fetch all users from the database
-    const users = await Prisma.user.findMany();
+    const users = await Prisma.user.findMany({where:{role:'Owner'}});
 
     res.status(200).json({ users });
   } catch (error) {
@@ -207,7 +207,6 @@ export const getOwner = asyncHandler(async(req:Request,res:Response)=>{
         // Fetch owner from the database
         const owner = await Prisma.user.findUnique({
           where: { id: parseInt(id,10) }, // Adjust based on your ID type
-          select: { email: true } // Only select the email field
         });
 
         if (!owner) {
