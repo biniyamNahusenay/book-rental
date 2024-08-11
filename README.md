@@ -1,6 +1,6 @@
 # you should have a postgres is running and set up the .env file
-run 'npm i' In the parent folder
-cd backend
+run 'npm i' In the parent folder and then migrate to backend : 
+cd backend then make : 
 npx prisma db push
 #Then you should back to the parent directory
 then run "npm run dev"
