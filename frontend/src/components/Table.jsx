@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Button } from '@mui/material';
 import { useGetAllBooksQuery } from '../redux/api/books';
-import { useGetOwnerByIdQuery } from '../redux/api/users'; // Ensure this query is available
+import { useGetAllUsersQuery } from '../redux/api/users'; // Use this to fetch all users
 import { useDispatch } from 'react-redux';
 import { setFilteredBooks } from '../redux/features/books/bookSlice';
 
@@ -12,35 +12,27 @@ function createData(no, bookNo, ownerEmail, status, price, color) {
 const CustomTable = () => {
     const dispatch = useDispatch();
     const { data: booksData, error: booksError, isLoading: booksLoading } = useGetAllBooksQuery();
+    const { data: usersData } = useGetAllUsersQuery(); // Fetch all users
     const [books, setBooks] = useState([]);
     const [ownerEmails, setOwnerEmails] = useState({}); // Store owner emails
 
     useEffect(() => {
-        if (booksData?.books) {
+        if (booksData?.books && usersData?.users) {
             dispatch(setFilteredBooks(booksData.books));
             setBooks(booksData.books);
 
-            // Fetch owner emails
-            const ownerIds = [...new Set(booksData.books.map(book => book.ownerId))]; // Unique owner IDs
-
-            const fetchOwnerEmails = async () => {
-                const emails = {};
-                for (const ownerId of ownerIds) {
-                    const { data: ownerData } = await useGetOwnerByIdQuery(ownerId).unwrap();
-                    emails[ownerId] = ownerData.email; // Adjust based on your query response
-                }
-                setOwnerEmails(emails);
-            };
-
-            fetchOwnerEmails();
+            const emails = {};
+            usersData.users.forEach(user => {
+                const ownerName = user.email.split('@')[0]; 
+                emails[user.id] =  ownerName; // Assuming `user.id` matches `ownerId` and `user.email` is the email
+            });
+            setOwnerEmails(emails);
         }
-    }, [booksData, dispatch]);
+    }, [booksData, usersData, dispatch]);
 
     if (booksLoading) return <div>Loading books...</div>;
     if (booksError) return <div>Error loading books data: {booksError.message || 'Unknown error'}</div>;
 
-    console.log(ownerEmails)
-    console.log(books?.ownerId)
     // Create rows with the fetched owner emails
     const rows = books.map((book, index) => createData(
         index + 1,

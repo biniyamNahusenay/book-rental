@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Switch } from '@mui/material';
 import { useGetAllBooksQuery } from '../../redux/api/books';
+import { useGetAllUsersQuery } from '../../redux/api/users';
 import { useDispatch } from 'react-redux';
 import { setFilteredBooks } from '../../redux/features/books/bookSlice';
 
@@ -11,33 +12,24 @@ function createData(no, author, ownerEmail, category, bookName, status, isActive
 const AdminBooks = () => {
     const dispatch = useDispatch();
     const { data: booksData, error: booksError, isLoading: booksLoading } = useGetAllBooksQuery();
+    const { data: usersData } = useGetAllUsersQuery(); // Fetch all users
     const [books, setBooks] = useState([]);
     const [ownerEmails, setOwnerEmails] = useState({});
 
     useEffect(() => {
-        if (booksData?.books) {
+        if (booksData?.books && usersData?.users) {
             dispatch(setFilteredBooks(booksData.books));
             setBooks(booksData.books);
 
-            const ownerIds = [...new Set(booksData.books.map(book => book.ownerId))];
-
-            const fetchOwnerEmails = async () => {
-                const emails = {};
-                for (const ownerId of ownerIds) {
-                    const response = await fetch(`http://localhost:5000/api/user/owners/${ownerId}`);
-                    if (response.ok) {
-                        const ownerData = await response.json();
-                        emails[ownerId] = ownerData.email;
-                    } else {
-                        emails[ownerId] = 'Unknown';
-                    }
-                }
-                setOwnerEmails(emails);
-            };
-
-            fetchOwnerEmails();
+            // Map owner IDs to emails
+            const emails = {};
+            usersData.users.forEach(user => {
+                const ownerName = user.email.split('@')[0]; 
+                emails[user.id] =  ownerName; // Assuming `user.id` matches `ownerId` and `user.email` is the email
+            });
+            setOwnerEmails(emails);
         }
-    }, [booksData, dispatch]);
+    }, [booksData, usersData, dispatch]);
 
     if (booksLoading) return <div>Loading books...</div>;
     if (booksError) return <div>Error loading books data: {booksError.message || 'Unknown error'}</div>;

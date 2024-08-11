@@ -51,7 +51,7 @@ const Sidebar = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', marginRight:'-85px', border:'10px',borderRadius:'40px'}}>
+    <Box sx={{ display: 'flex', marginRight:'-85px', border:'10px',borderRadius:'40px', overflow:'hidden'}}>
       <CssBaseline />
       <Drawer
         sx={{
