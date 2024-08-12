@@ -3,13 +3,14 @@ import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useGetAllBooksQuery } from '../../../redux/api/books';
-import { useGetAllUsersQuery, useApproveOwnerMutation } from '../../../redux/api/users';
+import { useGetAllUsersQuery, useApproveOwnerMutation, useDeleteUserMutation } from '../../../redux/api/users';
 import { useDispatch } from 'react-redux';
 import { setFilteredBooks } from '../../../redux/features/books/bookSlice';
 import { useParams } from 'react-router-dom';
+import OwnerDetailsModal from '../../../components/OwnerDetailsModal';
 
-function createData(no, author, ownerId, ownerEmail, location, bookName, uploadCount, status, isActive, isApproved) {
-    return { no: no.toString().padStart(2, '0'), author, ownerId, ownerEmail, location, bookName, uploadCount, status, isActive, isApproved };
+function createData(no, author, ownerId, ownerEmail, location, bookName, uploadCount, status, isActive, isApproved, owner) {
+    return { no: no.toString().padStart(2, '0'), author, ownerId, ownerEmail, location, bookName, uploadCount, status, isActive, isApproved, owner };
 }
 
 const AdminOthers = () => {
@@ -20,6 +21,9 @@ const AdminOthers = () => {
     const [books, setBooks] = useState([]);
     const [ownerDetails, setOwnerDetails] = useState({});
     const [approveOwner] = useApproveOwnerMutation(); // Get mutation function
+    const [deleteUser] = useDeleteUserMutation(); // Add delete mutation function
+    const [openModal, setOpenModal] = useState(false);
+    const [selectedOwner, setSelectedOwner] = useState(null);
 
     useEffect(() => {
         if (booksData?.books && usersData?.users) {
@@ -48,6 +52,7 @@ const AdminOthers = () => {
                     location: user.location || 'Unknown Location',
                     uploadCount: ownerBookCount[user.id] || 0,
                     isApproved: user.approved || false, // Assuming `approved` field exists in usersData
+                    PhoneNumber: user.PhoneNumber || 'Not Provided'
                 };
             });
             setOwnerDetails(detailsMap);
@@ -73,6 +78,30 @@ const AdminOthers = () => {
         }
     };
 
+    const handleDelete = async (ownerId) => {
+        try {
+            await deleteUser(ownerId);
+            // Manually update the UI or refetch data if necessary
+            setOwnerDetails((prevDetails) => {
+                const updatedDetails = { ...prevDetails };
+                delete updatedDetails[ownerId];
+                return updatedDetails;
+            });
+        } catch (error) {
+            console.error("Failed to delete owner:", error);
+        }
+    };
+
+    const handleViewClick = (owner) => {
+        setSelectedOwner(owner);
+        setOpenModal(true);
+    };    
+    
+    const handleCloseModal = () => {
+        setOpenModal(false);
+        setSelectedOwner(null);
+    };
+
     const rows = Object.keys(ownerDetails).map((ownerId, index) => createData(
         index + 1,
         'Author Placeholder',
@@ -83,8 +112,9 @@ const AdminOthers = () => {
         ownerDetails[ownerId].uploadCount || 0,
         'Status Placeholder',
         true,
-        ownerDetails[ownerId].isApproved || false
-    ));
+        ownerDetails[ownerId].isApproved || false,
+        ownerDetails[ownerId] // Pass the entire owner object here
+    ));    
 
     return (
         <Box sx={{ marginTop: '40px', width: '80%', marginLeft: '20px' }}>
@@ -122,10 +152,10 @@ const AdminOthers = () => {
                                     />
                                 </TableCell>
                                 <TableCell>
-                                    <IconButton aria-label="delete" sx={{color:'red'}}>
+                                    <IconButton aria-label="delete" sx={{ color: 'red' }} onClick={() => handleDelete(row.ownerId)}>
                                         <DeleteIcon />
                                     </IconButton>
-                                    <IconButton aria-label="view">
+                                    <IconButton aria-label="view" onClick={() => handleViewClick(row.owner)}>
                                         <VisibilityIcon />
                                     </IconButton>
                                 </TableCell>
@@ -142,8 +172,10 @@ const AdminOthers = () => {
                             </TableRow>
                         ))}
                     </TableBody>
+
                 </Table>
             </TableContainer>
+            <OwnerDetailsModal open={openModal} onClose={handleCloseModal} owner={selectedOwner} />
         </Box>
     );
 };

@@ -2,11 +2,12 @@ POST http://localhost:5000/api/user/register
 Content-Type: application/json
 
 {
-    "email":"abebe@gmail.com",
+    "email":"jemo@gmail.com",
     "password":"12345678",
     "confirmPassword":"12345678",
     "phoneNumber":"0911546789",
-    "location":"Adama"
+    "location":"Addis Ababa",
+    "role":"Owner"
 }
 
 ###
@@ -31,34 +32,34 @@ POST http://localhost:5000/api/books/upload
 Content-Type: application/json
 
 {
-    "title":"Weyward",
+    "title":"melos",
     "author":"Emilia Hart",
     "category":["Fiction"],
     "quantity":"2",
+    "image":["https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1677756582l/60654349._SY475_.jpg"],
+    "price":"48",
+    "ownerId":"6"
+}
+###
+
+PUT http://localhost:5000/api/books/edit/7
+Content-Type: application/json
+
+{
+    "title":"Weyward",
+    "author":"Emilia Hart",
+    "category":["Romance"],
+    "quantity":"0",
     "image":["https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1677756582l/60654349._SY475_.jpg"],
     "price":"48",
     "ownerId":"5"
 }
 ###
 
-PUT http://localhost:5000/api/books/edit/4
-Content-Type: application/json
-
-{
-    "title":"Weyward",
-    "author":"Emilia Hart",
-    "category":["Fiction"],
-    "quantity":"2",
-    "image":["https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1677756582l/60654349._SY475_.jpg"],
-    "price":"49",
-    "ownerId":"5"
-}
+DELETE http://localhost:5000/api/books/delete/7
 ###
 
-DELETE http://localhost:5000/api/books/delete/4
-###
-
-PATCH http://localhost:5000/api/user/approve-owner/5
+PATCH http://localhost:5000/api/user/approve-owner/6
 Content-Type: application/json
 
 {
@@ -67,3 +68,32 @@ Content-Type: application/json
 ###
 
 GET http://localhost:5000/api/books/allbooks
+###
+
+POST http://localhost:5000/api/rentals/book/1/rent
+Content-Type: application/json
+
+{}
+###
+
+GET http://localhost:5000/api/user/owners/revenue
+###
+
+PATCH http://localhost:5000/api/user/owner/6/disable
+Content-Type: application/json
+
+{
+    
+}
+###
+
+GET http://localhost:5000/api/user/books/filter?category=Romance&author=Emily%20Henry&ownerId=6&limit=9
+###
+
+GET http://localhost:5000/api/statistics/books-by-category
+###
+
+GET http://localhost:5000/api/user/owners/5
+###
+
+DELETE http://localhost:5000/api/user/delete/28

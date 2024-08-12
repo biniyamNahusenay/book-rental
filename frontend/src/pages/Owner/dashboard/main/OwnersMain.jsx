@@ -1,20 +1,20 @@
 import React from 'react'
 import {Box,Container,Stack} from "@mui/material"
-import Card from '../../../../components/Card'
-import CardPie from '../../../../components/CardPie'
 import CustomTable from '../../../../components/Table'
 import ZigZagLineChart from '../../../../components/ZigZagLineChart'
-import { useGetAllBooksQuery } from '../../../../redux/api/books'
+import Card from '../../../../components/Card'
+import CardPie from '../../../../components/CardPie'
+import { useGetAllOwnersBookQuery } from '../../../../redux/api/books'
 
-const Main = () => {
-  const { data, error, isLoading } = useGetAllBooksQuery();
+const OwnersMain = () => {
+  const {data,error,isLoading} = useGetAllOwnersBookQuery()
   return (
         <Stack>
            <Box sx={{
                 width: '1160px',padding: '10px',marginTop: '13px',backgroundColor: 'white',color: '#000000',
                fontSize: '1rem', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',borderRadius:'10px',marginBottom:'12px'
               }}>
-              Admin/Dashboard
+              Owner/Dashboard
            </Box>
              <Box sx={{display:'flex', gap:'10px'}}>
               <Box
@@ -42,7 +42,8 @@ const Main = () => {
                       borderRadius: '4px',
                       backgroundColor: 'white',
                       flex:'3',
-                      width:'100%'
+                      width:'100%',
+                      marginTop:'-20px'
                     }}>
                     <CustomTable data={data} error={error} isLoading={isLoading}/>
                   </Box>
@@ -54,6 +55,7 @@ const Main = () => {
                       backgroundColor: 'white',
                       flex:'2',
                       width:'100%',
+                      marginTop:'-17px'
                     }}>
                     <ZigZagLineChart/>
                   </Box>
@@ -63,4 +65,4 @@ const Main = () => {
   )
 }
 
-export default Main
+export default OwnersMain

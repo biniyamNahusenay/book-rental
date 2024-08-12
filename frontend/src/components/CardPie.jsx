@@ -8,6 +8,8 @@ import Typography from '@mui/material/Typography';
 import { Divider } from '@mui/material';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import PieChart from './PieChart'
+import { useGetAllBooksQuery, useGetAllOwnersBookQuery } from '../redux/api/books';
+import { useSelector } from 'react-redux';
 
 const bull = (
   <Box
@@ -18,13 +20,20 @@ const bull = (
   </Box>
 );
 
-const cardd = (
-  <React.Fragment>
-        <PieChart/>
-  </React.Fragment>
-);
-
 export default function CardPie() {
+  const {userInfo} = useSelector(state=>state.auth)
+  const {data:ownersData,error:ownersError,isLoading:ownersLoading} = useGetAllOwnersBookQuery()
+  const { data, error, isLoading } = useGetAllBooksQuery();
+
+  const dataToSend = userInfo?.user.role === 'Admin' ? data : ownersData
+  const errorToSend = userInfo?.user.role === 'Admin' ? error : ownersError
+  const isLoadingToSend = userInfo?.user.role === 'Admin' ? isLoading : ownersLoading
+
+  const cardd = (
+    <React.Fragment>
+          <PieChart data={dataToSend} error={errorToSend} isLoading={isLoadingToSend}/>
+    </React.Fragment>
+  );
   return (
       <>  
         <Box sx={{ Width: 70,marginRight:'25px',  boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)'}}>

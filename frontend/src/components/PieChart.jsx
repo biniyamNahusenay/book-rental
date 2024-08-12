@@ -7,9 +7,8 @@ import { setFilteredBooks } from '../redux/features/books/bookSlice';
 
 const COLORS = ['#FF0000', '#00FF00', '#0000FF']; // Red, Green, Blue
 
-const CustomPieChartCard = () => {
+const CustomPieChartCard = ({data,error,isLoading}) => {
   const dispatch = useDispatch();
-  const { data, error, isLoading } = useGetAllBooksQuery();
 
   useEffect(() => {
     if (data?.books) {

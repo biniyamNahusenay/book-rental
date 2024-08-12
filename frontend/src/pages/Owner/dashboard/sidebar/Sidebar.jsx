@@ -6,9 +6,9 @@ const Sidebar = () => {
   const { userInfo } = useSelector((state) => state.auth);
   const role = userInfo?.user.role
   return (
-   <>
-    <CommonSidebar role={role}/>
-   </>
+    <>
+      <CommonSidebar role={role}/>
+    </>
   )
 }
 

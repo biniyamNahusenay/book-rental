@@ -216,7 +216,22 @@ export const getOwner = asyncHandler(async(req:Request,res:Response)=>{
 
         res.status(200).json(owner);
     } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error',error });
     }
 
+})
+
+export const deleteUser = asyncHandler(async(req:Request,res:Response)=>{
+  const { id } = req.params;
+  if (!id) {
+    res.status(400).json({ message: 'Owner ID is required' });
+    return;
+ }
+ 
+ try {
+  await Prisma.user.delete({ where: { id: parseInt(id,10) } });
+  res.status(204).send("deleted successfully");
+} catch (error) {
+  res.status(500).json({ message: 'Server error',error });
+}
 })

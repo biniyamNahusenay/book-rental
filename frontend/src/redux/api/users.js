@@ -66,11 +66,18 @@ export const userApiSlice = apiSlice.injectEndpoints({
       }),
 
       getOwnerById:builder.query({
-        query:({id})=>({
+        query:(id)=>({
           url:`${USERS_URL}/owners/${id}`
-        })
-      })
+        }),
+      }),
+      deleteUser: builder.mutation({
+        query: (id) => ({
+          url: `${USERS_URL}/delete/${id}`,
+          method: 'DELETE',
+        }),
+      }),
     })
 })
 
-export const {useRegisterMutation,useLoginMutation,useGetAllUsersQuery,useGetOwnerByIdQuery,useApproveOwnerMutation} = userApiSlice
+export const {useRegisterMutation,useLoginMutation,useGetAllUsersQuery,
+  useGetOwnerByIdQuery,useApproveOwnerMutation,useDeleteUserMutation,useLogoutMutation} = userApiSlice
