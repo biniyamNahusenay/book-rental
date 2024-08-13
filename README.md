@@ -8,3 +8,8 @@ then run "npm run dev"
 #then navigate to frontend directory
     run    " npm i "
 then run      "npm run dev"
+
+#make the .env file just like :  DATABASE_URL="postgresql://postgres:passwordlocalhost:5432/rental"
+JWT_SECRET="your jwt secret"
+NODE_ENV="development"
+PORT=5000
